@@ -2,6 +2,15 @@ sequenceDiagram
     participant browser
     participant server
 
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
+    activate server
+    Note left of server: Code on server takes the text in name attribute of text input and adds it to list
+
+    server-->>browser: 302 Found
+    deactivate server
+
+    Note right of browser: URL redirect - server asks the browser to do another GET to the Location of spefified in the Response Header
+
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
     server-->>browser: HTML document
@@ -25,3 +34,4 @@ sequenceDiagram
     deactivate server
 
     Note right of browser: The browser executes the callback function that renders the notes
+  
