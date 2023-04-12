@@ -8,38 +8,47 @@ const Header = (props) => {
   )
 }
 
+const Button = ({ onClick, btnName }) => { 
+  console.log({btnName})
+  return(
+    <button onClick={onClick}>
+      {btnName}
+    </button>
+  )
+}
+
+const StatisticLine = (props) => {
+  return (
+    <tr>
+      <td>{props.text}</td><td>{props.value} {(props.type === "percentage") && "%"}  </td>
+    </tr>
+  )
+}
+
 const Statistics = (props) => {
 
   const all = props.good + props.neutral + props.bad
   const average = props.good/all - props.bad/all
   const positive = (props.good / all) * 100
-  const anygtzero = (props.good>0) || (props.neutral>0) || (props.bad>0)
 
   return (
-    <div>
-      {anygtzero && (          <table>
-          <tbody>
-              <tr>
-                <td>good</td><td>{props.good}</td>
-              </tr>
-              <tr>
-                <td>neutral</td><td>{props.neutral}</td>
-              </tr>
-              <tr>
-                <td>bad</td><td>{props.bad}</td>
-              </tr>
-              <tr>
-                <td>all</td><td>{all}</td>
-              </tr>
-              <tr>
-                <td>average</td><td>{isNaN(average) ? 0 : average }</td>
-              </tr>
-              <tr>
-                <td>positive</td><td>{isNaN(positive) ? 0 : positive }%</td>
-              </tr>
-          </tbody>
-      </table>)}
-      <p>No feedback given</p>
+      <div>
+        <h1>
+          statistics
+        </h1>
+        {
+          all>0 ?
+          <table>
+            <tbody>
+              <StatisticLine text="good" value={ props.good } />  
+              <StatisticLine text="neutral" value={ props.neutral } />
+              <StatisticLine text="bad" value={ props.bad } />
+              <StatisticLine text="all" value={ all} />
+              <StatisticLine text="average" value={isNaN(average) ? 0 : average }/>
+              <StatisticLine text="positive" value={isNaN(positive) ? 0 : positive} type="percentage" />
+            </tbody>
+          </table> : <p>No feedback given</p>
+        }
       </div>
     )
 }
@@ -57,13 +66,9 @@ const App = () => {
     <div>
       <Header title={title} />
 
-      <button onClick={() => setGood(good + 1)}>good</button>
-      <button onClick={() => setNeutral(neutral + 1)}>neutral</button>
-      <button onClick={() => setBad(bad + 1)}>bad</button>
-
-      <h1>
-        statistics
-      </h1>
+      <Button onClick={() => setGood(good + 1)} btnName="good" />
+      <Button onClick={() => setNeutral(neutral + 1)} btnName="neutral" />
+      <Button onClick={() => setBad(bad + 1)} btnName="bad" />
 
       <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
