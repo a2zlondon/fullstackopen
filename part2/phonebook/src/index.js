@@ -1,25 +1,6 @@
-import ReactDOM from "react-dom/client"
 import React from 'react'
-import App from "./App"
+import ReactDOM from 'react-dom/client'
 
-const names = [
-    {
-        id: 1,
-        content: "HTML is easy",
-        important: true,
-    },
-    {
-        id: 2,
-        content: "Browser can execute only JavaScript",
-        important: false,
-    },
-    {
-        id: 3,
-        content: "GET and POST are the most important methods of HTTP protocol",
-        important: true,
-    },
-]
+import App from './App'
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-    <App names={names} />
-)
+ReactDOM.createRoot(document.getElementById('root')).render(<App />)

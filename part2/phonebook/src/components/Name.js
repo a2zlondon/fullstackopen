@@ -1,6 +1,6 @@
 const Name = ({ name }) => {
     return (
-        <li>{name.content}</li>
+        <li>{name}</li>
     )
 }
 
