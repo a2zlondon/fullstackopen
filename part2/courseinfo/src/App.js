@@ -3,18 +3,19 @@ const Header = ({ course }) => <h1>{course}</h1>
 const Total = ({ parts }) => {
   const initialValue = 0;
   return (
-    <p>
-      total of
+    <div>
+      <span>total of </span>
       {
-          parts.reduce(function (accumulator, currentValue) {
-            return accumulator + currentValue.exercises}, initialValue)     
+        parts.reduce(function (accumulator, currentValue) {
+          return accumulator + currentValue.exercises
+        }, initialValue)
       }
-      exercises
-    </p>
+      <span> exercises</span>
+    </div>
   )
 }
 
-const Part = ({ part }) => 
+const Part = ({ part }) =>
   <li>
     {part.name} {part.exercises}
   </li>
@@ -23,13 +24,13 @@ const Content = ({ parts }) => {
   return (
     <div>
       <ul>
-          {
-            parts.map(part =>
-              <Part key={part.id} part={part} />
-            )
-          }
-        </ul>
-      </div>
+        {
+          parts.map(part =>
+            <Part key={part.id} part={part} />
+          )
+        }
+      </ul>
+    </div>
   )
 }
 
