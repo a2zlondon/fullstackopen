@@ -9,19 +9,25 @@ const App = () => {
   ])
   const [newName, setNewName] = useState('')
 
+  function ifNameExists(nom) {
+    return nom.fullname === newName;
+  }
+
   const addName = (event) => {
-    console.log(newName)
     event.preventDefault()
-    const nameObject = {
-      fullname: newName,
-      id: names.length + 1,
+    if (names.find(ifNameExists)) {
+        alert(`${newName} is already added to phonebook`)
+    } else { 
+      const nameObject = {
+        fullname: newName,
+        id: names.length + 1,
+      }
+      setNames(names.concat(nameObject))
+      setNewName('')
     }
-    setNames(names.concat(nameObject))
-    setNewName('')
   }
 
   const handleNameChange = (event) => {
-    console.log(event.target.value)
     setNewName(event.target.value)
   }
 
@@ -39,7 +45,7 @@ const App = () => {
       <h2>Numbers</h2>
       <ul>
         {names.map(name => 
-          <Name key={name.fullname} name={name.fullname} />
+          <Name key={name.key} name={name.fullname} />
         )}
       </ul>
     </div>
