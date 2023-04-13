@@ -1,3 +1,5 @@
+import React from 'react'
+
 const Header = ({ course }) => <h1>{course}</h1>
 
 const Total = ({ parts }) => {
@@ -49,7 +51,7 @@ const Courses = ({ courses }) => {
         <div>
             {
                 courses.map(course =>
-                    <Course course={course} />
+                    <Course key={course.id} course={course} />
                 )
             }
         </div>
