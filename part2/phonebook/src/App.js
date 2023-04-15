@@ -26,8 +26,26 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault()
-    if (persons.find(ifNameExists)) {
-        alert(`${newName} is already added to phonebook`)
+    const p = persons.find(ifNameExists)
+    if (p) {
+      console.log(`So I can see it ${p.id}`)
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with the new one?`)) { 
+        const nameObject = {
+          name: newName,
+          number: newNumber,
+          id: p.id,
+        }
+        personService
+        .update(p.id, nameObject)
+          .then(
+            personService
+            .getAll()
+            .then(initialPersons => {
+              setPersons(initialPersons)})
+        )
+        setNewName('')
+        setNewNumber('')
+      }
     } else { 
       const nameObject = {
         name: newName,
@@ -36,7 +54,7 @@ const App = () => {
       }
       personService
       .create(nameObject)
-      .then(returnedPerson => {
+        .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
       })
@@ -74,7 +92,7 @@ const App = () => {
         .catch((error) => {
           console.log(error);
           alert(`there was an error deleting person '${person.name}'`)
-        }, 3000);
+        });
     }
   }
 
