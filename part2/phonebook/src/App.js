@@ -61,6 +61,23 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
+  const handleDeletePerson = (id) => {
+    console.log(`Delete person with ID ${id}`)
+    const person = persons.find((p) => p.id === id);
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      personService
+        .remove(person.id)
+        .then((person) => {
+          console.log(`Deleted`)
+          setPersons(persons.filter((p) => p.id !== id));
+        })
+        .catch((error) => {
+          console.log(error);
+          alert(`there was an error deleting person '${person.name}'`)
+        }, 3000);
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -73,7 +90,7 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons persons={persons} newFilter={newFilter} />
+      <Persons persons={persons} newFilter={newFilter} deletePerson={handleDeletePerson} />
       
     </div>
   )

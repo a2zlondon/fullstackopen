@@ -1,6 +1,10 @@
-const Person = ({ person }) => {
+const Person = ({ person, deletePerson }) => {
     return (
-        <li key={person.key}>{person.name} {person.number}</li>
+        <div>
+            <li key={person.key}>{person.name} {person.number}
+                <button onClick={deletePerson}>delete</button>
+            </li>
+        </div>
     )
 }
 
