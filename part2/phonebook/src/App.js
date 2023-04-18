@@ -4,6 +4,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
 
@@ -11,6 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [message, setMessage] = useState({severity: '', info: ''})
 
   useEffect(() => {
     personService
@@ -28,39 +30,53 @@ const App = () => {
     event.preventDefault()
     const p = persons.find(ifNameExists)
     if (p) {
-      console.log(`So I can see it ${p.id}`)
-      if (window.confirm(`${newName} is already added to phonebook, replace the old number with the new one?`)) { 
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with the new one?`)) {
         const nameObject = {
           name: newName,
           number: newNumber,
           id: p.id,
         }
         personService
-        .update(p.id, nameObject)
+          .update(p.id, nameObject)
           .then(
             personService
-            .getAll()
-            .then(initialPersons => {
-              setPersons(initialPersons)})
-        )
-        setNewName('')
-        setNewNumber('')
+              .getAll()
+              .then(initialPersons => {
+                setPersons(initialPersons)
+                setNewName('')
+                setNewNumber('')
+              })
+          )
+          setMessage({
+            severity: 'success',
+            info: `Updated: ${newName}`
+          })
+          setTimeout(() => {
+            setMessage({severity: '', info: ''})
+          }, 3000)            
+
       }
-    } else { 
+    } else {
       const nameObject = {
         name: newName,
         number: newNumber,
         id: persons.length + 1,
       }
       personService
-      .create(nameObject)
+        .create(nameObject)
         .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName('')
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
+      
+      setMessage({
+        severity: 'success',
+        info: `Added: ${newName}`
       })
-
-      setNewName('')
-      setNewNumber('')
+      setTimeout(() => {
+        setMessage({severity: '', info: ''})
+      }, 3000)
     }
   }
 
@@ -90,8 +106,13 @@ const App = () => {
           setPersons(persons.filter((p) => p.id !== id));
         })
         .catch((error) => {
-          console.log(error);
-          alert(`there was an error deleting person '${person.name}'`)
+          setMessage({
+            severity: 'error',
+            info: `${person.name} was already removed from server`
+          })
+          setTimeout(() => {
+            setMessage({severity: '', info: ''})
+          }, 3000)
         });
     }
   }
@@ -99,6 +120,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <div>
         <Filter filter={newFilter} changeHandler={handleFilterChange}  />
       </div>
