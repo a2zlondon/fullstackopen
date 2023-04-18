@@ -45,7 +45,15 @@ const App = () => {
                 setPersons(initialPersons)
                 setNewName('')
                 setNewNumber('')
-              })
+              }).catch((error) => {
+                    setMessage({
+                      severity: 'error',
+                      info: `Information of ${newName} has already been removed from server`
+                    })
+                    setTimeout(() => {
+                      setMessage({severity: '', info: ''})
+                    }, 3000)
+                  })
           )
           setMessage({
             severity: 'success',
@@ -68,7 +76,15 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
-        })
+        }).catch((error) => {
+          setMessage({
+            severity: 'error',
+            info: `There was a problem adding ${newName} to the server`
+          })
+          setTimeout(() => {
+            setMessage({severity: '', info: ''})
+          }, 3000)
+        });
       
       setMessage({
         severity: 'success',
