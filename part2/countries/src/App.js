@@ -2,10 +2,14 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import Search from './components/Search'
 import countriesService from './services/countries'
+import weatherService from './services/weather'
 import Countries from './components/Countries'
 import CountryDetails from './components/CountryDetails'
 
+
 function App() {
+
+  const api_key = process.env.REACT_APP_API_KEY
 
   const [newSearch, setNewSearch] = useState('')
   const [countries, setCountries] = useState([])
@@ -34,10 +38,10 @@ function App() {
   let showDetail;
   if (country) {
     console.log('%cApp.js line:34 showDetails? country', 'color: #007acc;', country);
-    showDetail = <div><CountryDetails country={country} /></div> 
+    showDetail = <div><CountryDetails country={country} api_key={api_key} /></div> 
   } else {
     console.log('%cApp.js line:38 showDetails ', 'color: #007acc;', country );
-    showDetail = <div><Countries countries={countries} newSearch={newSearch} showCountryDetails={handleShowCountryDetails} /></div>
+    showDetail = <div><Countries countries={countries} newSearch={newSearch} showCountryDetails={handleShowCountryDetails} api_key={api_key} /></div>
   }
 
   return (

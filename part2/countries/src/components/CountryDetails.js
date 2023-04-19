@@ -1,8 +1,21 @@
-const CountryDetails = ({ country }) => {
-    console.log('%cCountryDetails.js line:4 COUNTRY: country', 'color: #007acc;', country);
+import { useEffect } from 'react'
+import { useState } from 'react'
+import weatherService from '../services/weather'
+
+const CountryDetails = ({ country, api_key }) => {
+
+    const [weather, setWeather] = useState({})
+
+    useEffect(() => {
+        weatherService
+            .getByCapital(country.capital, api_key)
+            .then(w => {
+                setWeather(w.current)
+            })
+    }, [])
+
     const lang = []
     for (const [key, value] of Object.entries(country.languages)) {
-        console.log(`key value ${key}: ${value}`)
         lang.push(value)
     }
 
@@ -13,13 +26,22 @@ const CountryDetails = ({ country }) => {
             <div>area {country.area}</div> 
             <h3>languages</h3>
             <ul>
-            {
-                lang.map((language) => {
-                    return (<li key={language}>{language}</li>)
-                })
-            }
+                {
+                    lang.map((language) => {
+                        return (<li key={language}>{language}</li>)
+                    })
+                }
             </ul>
             <img src={country.flags.png} height='100' alt={`flag of ${country.flag}`} />  
+            <h2>Weather in {country.capital} </h2>
+            
+
+            <div>temperature {weather.temp_c} Celsius</div>
+
+            <img src={`https:${weather.condition?.icon}`} height='100' alt={`weather image of ${country.capital}`} />
+            
+            <div>wind {weather.wind_mph} mph</div>
+
         </div>
     )
 }
