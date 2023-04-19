@@ -1,33 +1,12 @@
 import Country from './Country'
+import CountryDetails from './CountryDetails'
 
 const Countries = ({ countries, newSearch }) => {
     const filteredCountries = countries.filter(country => country.name.official.toLowerCase().match(newSearch))   
-
+    console.log('%ccountries.js line:6 filteredCountries.length', 'color: #007acc;', filteredCountries.length);
     if (filteredCountries.length === 1) {
-        console.log(`filteredCountries${filteredCountries[0].flag}`)
-
-        console.log(`LEN ${filteredCountries[0].length}`)
-        const lang = []
-        for (const [key, value] of Object.entries(filteredCountries[0].languages)) {
-            console.log(`key value ${key}: ${value}`)
-            lang.push(value)
-        }
-
         return (
-            <div>
-                <h3>{filteredCountries[0].name.common}</h3>
-                <div>capital {filteredCountries[0].capital} </div>
-                <div>area {filteredCountries[0].area}</div> 
-                <h3>languages</h3>
-                <ul>
-                {
-                    lang.map((language) => {
-                        return (<li>{language}</li>)
-                    })
-                }
-                </ul>
-                <img src={filteredCountries[0].flags.png} height='100' alt={`flag of ${filteredCountries[0].flag}`} />  
-            </div>
+            <CountryDetails country={filteredCountries[0]} />
         )
     } else if (filteredCountries.length < 10) {
         return (
