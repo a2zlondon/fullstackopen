@@ -1,8 +1,7 @@
-const Country = ({ country, showCountry }) => {
-    console.log(`COUNTRY = ${country.name.official}`)
+const Country = ({ country, showCountryDetails }) => {
     return (
         <div>
-            <div key={country.key}>{country.name.official} <button onClick={showCountry}>show</button></div>
+            <div key={country.key}>{country.name.official} <button onClick={showCountryDetails}>show</button></div>
         </div>
     )
 }

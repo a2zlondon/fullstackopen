@@ -1,7 +1,5 @@
-
-
 const CountryDetails = ({ country }) => {
-    console.log('%cCountryDetails.js line:4 country', 'color: #007acc;', country);
+    console.log('%cCountryDetails.js line:4 COUNTRY: country', 'color: #007acc;', country);
     const lang = []
     for (const [key, value] of Object.entries(country.languages)) {
         console.log(`key value ${key}: ${value}`)

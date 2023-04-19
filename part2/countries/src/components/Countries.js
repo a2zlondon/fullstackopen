@@ -1,9 +1,10 @@
 import Country from './Country'
 import CountryDetails from './CountryDetails'
 
-const Countries = ({ countries, newSearch }) => {
+const Countries = ({ countries, newSearch, showCountryDetails }) => {
+
     const filteredCountries = countries.filter(country => country.name.official.toLowerCase().match(newSearch))   
-    console.log('%ccountries.js line:6 filteredCountries.length', 'color: #007acc;', filteredCountries.length);
+    
     if (filteredCountries.length === 1) {
         return (
             <CountryDetails country={filteredCountries[0]} />
@@ -11,7 +12,7 @@ const Countries = ({ countries, newSearch }) => {
     } else if (filteredCountries.length < 10) {
         return (
         <div>
-            {filteredCountries.map(country => <Country key={country.name.common} country={country} />)}
+                {filteredCountries.map(country => <Country key={country.name.common} country={country} showCountryDetails={() => showCountryDetails(country.name.common)} />)}
         </div> 
         )
     } else {
