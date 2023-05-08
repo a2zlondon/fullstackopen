@@ -12,7 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
-  const [message, setMessage] = useState({severity: '', info: ''})
+  const [message, setMessage] = useState({ severity: '', info: '' })
 
   useEffect(() => {
     personService
@@ -23,13 +23,14 @@ const App = () => {
   }, [])
 
   function ifNameExists(nom) {
-    return nom.name === newName;
+    return nom.name === newName
   }
 
   const addName = (event) => {
     event.preventDefault()
     const p = persons.find(ifNameExists)
     if (p) {
+      // eslint-disable-next-line no-undef
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with the new one?`)) {
         const nameObject = {
           name: newName,
@@ -38,30 +39,26 @@ const App = () => {
         }
         personService
           .update(p.id, nameObject)
-          .then(
-            personService
-              .getAll()
-              .then(initialPersons => {
-                setPersons(initialPersons)
-                setNewName('')
-                setNewNumber('')
-              }).catch((error) => {
-                    setMessage({
-                      severity: 'error',
-                      info: error.response.data.error
-                    })
-                    setTimeout(() => {
-                      setMessage({severity: '', info: ''})
-                    }, 3000)
-                  })
-          )
-          setMessage({
-            severity: 'success',
-            info: `Updated: ${newName}`
+          .catch((error) => {
+            showErrorMessage(setMessage, error)
           })
-          setTimeout(() => {
-            setMessage({severity: '', info: ''})
-          }, 3000)            
+
+        personService
+          .getAll()
+          .then(initialPersons => {
+            setPersons(initialPersons)
+            setNewName('')
+            setNewNumber('')
+          }).catch((error) => {
+            showErrorMessage(setMessage, error)
+          })
+        setMessage({
+          severity: 'success',
+          info: `Updated: ${newName}`
+        })
+        setTimeout(() => {
+          setMessage({ severity: '', info: '' })
+        }, 3000)
 
       }
     } else {
@@ -83,16 +80,16 @@ const App = () => {
             info: error.response.data.error
           })
           setTimeout(() => {
-            setMessage({severity: '', info: ''})
+            setMessage({ severity: '', info: '' })
           }, 3000)
-        });
-      
+        })
+
       setMessage({
         severity: 'success',
         info: `Added: ${newName}`
       })
       setTimeout(() => {
-        setMessage({severity: '', info: ''})
+        setMessage({ severity: '', info: '' })
       }, 3000)
     }
   }
@@ -114,23 +111,24 @@ const App = () => {
 
   const handleDeletePerson = (id) => {
     console.log(`Delete person with ID ${id}`)
-    const person = persons.find((p) => p.id === id);
+    const person = persons.find((p) => p.id === id)
+    // eslint-disable-next-line no-undef
     if (window.confirm(`Delete ${person.name} ?`)) {
       personService
         .remove(person.id)
         .then((person) => {
-          console.log(`Deleted`)
-          setPersons(persons.filter((p) => p.id !== id));
+          console.log(`Deleted ${person}`)
+          setPersons(persons.filter((p) => p.id !== id))
         })
-        .catch((error) => {
+        .catch(() => {
           setMessage({
             severity: 'error',
             info: `${person.name} was already removed from server`
           })
           setTimeout(() => {
-            setMessage({severity: '', info: ''})
+            setMessage({ severity: '', info: '' })
           }, 3000)
-        });
+        })
     }
   }
 
@@ -142,15 +140,25 @@ const App = () => {
         <Filter filter={newFilter} changeHandler={handleFilterChange}  />
       </div>
       <h2>Add a new</h2>
-    
+
       <PersonForm onSubmitClick={addName} newName={newName} nameChange={handleNameChange} newNumber={newNumber} numberChange={handleNumberChange} />
 
       <h2>Numbers</h2>
 
       <Persons persons={persons} newFilter={newFilter} deletePerson={handleDeletePerson} />
-      
+
     </div>
   )
+}
+
+function showErrorMessage(setMessage, error) {
+  setMessage({
+    severity: 'error',
+    info: error.response.data.error
+  })
+  setTimeout(() => {
+    setMessage({ severity: '', info: '' })
+  }, 3000)
 }
 
 export default App
