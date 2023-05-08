@@ -48,7 +48,7 @@ const App = () => {
               }).catch((error) => {
                     setMessage({
                       severity: 'error',
-                      info: `Information of ${newName} has already been removed from server`
+                      info: error.response.data.error
                     })
                     setTimeout(() => {
                       setMessage({severity: '', info: ''})
@@ -77,9 +77,10 @@ const App = () => {
           setNewName('')
           setNewNumber('')
         }).catch((error) => {
+          console.log(error.response.data.error)
           setMessage({
             severity: 'error',
-            info: `There was a problem adding ${newName} to the server`
+            info: error.response.data.error
           })
           setTimeout(() => {
             setMessage({severity: '', info: ''})
