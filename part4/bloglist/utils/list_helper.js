@@ -1,9 +1,12 @@
 
 const totalLikes = (blogs) => {
-  var sum = blogs.map(blog => blog.likes).reduce((acc, likes) => acc + likes)
-  return sum
+  return blogs.map(blog => blog.likes).reduce((acc, likes) => acc + likes)
+}
+
+const favoriteBlog = (blogs) => {
+  return blogs.reduce((prev, current) => (prev.likes > current.likes) ? prev : current)
 }
 
 module.exports = {
-  totalLikes
+  totalLikes, favoriteBlog
 }
