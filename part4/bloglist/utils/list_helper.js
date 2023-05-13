@@ -1,7 +1,9 @@
-const dummy = (blogs) => {
-  return 1
+
+const totalLikes = (blogs) => {
+  var sum = blogs.map(blog => blog.likes).reduce((acc, likes) => acc + likes)
+  return sum
 }
 
 module.exports = {
-  dummy
+  totalLikes
 }
