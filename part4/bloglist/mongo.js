@@ -11,7 +11,7 @@ const author = process.argv[4]
 const url = process.argv[5]
 const likes = process.argv[6]
 
-const mongourl = `mongodb+srv://fullstackopen:${password}@fullstackopen-phonebook.jyrvi41.mongodb.net/bloglistApp?retryWrites=true&w=majority`
+const mongourl = `mongodb+srv://fullstackopen:${password}@fullstackopen-phonebook.jyrvi41.mongodb.net/bloglistTest?retryWrites=true&w=majority`
 
 mongoose.set('strictQuery', false)
 mongoose.connect(mongourl)
