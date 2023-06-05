@@ -16,20 +16,20 @@ beforeEach(async () => {
   await blogObject.save()
 })
 
-// test('Defaulted likes to 0', async () => {
-//   const payload = {
-//     'title': 'Test Title',
-//     'author': 'Test Author',
-//     'url': 'https://www.google.com/',
-//   }
-//   const response = await api
-//     .post('/api/blogs')
-//     .send(payload)
-//     .set('Content-Type', 'application/json')
-//     .expect(201)
+test('Defaulted likes to 0', async () => {
+  const payload = {
+    'title': 'Test Title',
+    'author': 'Test Author',
+    'url': 'https://www.google.com/',
+  }
+  const response = await api
+    .post('/api/blogs')
+    .send(payload)
+    .set('Content-Type', 'application/json')
+    .expect(201)
 
-//   expect(response.body.likes).toBe(0)
-// }, 100000)
+  expect(response.body.likes).toBe(0)
+}, 100000)
 
 test('a valid blog can be added', async () => {
   const newBlog = {
