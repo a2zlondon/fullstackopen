@@ -16,15 +16,16 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-  const body = request.body
 
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes
-  })
+  const { title, url } = request.body
 
+  if (!url || !url.trim()) {
+    return response.status(400).send({ error: 'url is missing' })
+  }
+  if (!title || !title.trim()) {
+    return response.status(400).send({ error: 'title is missing' })
+  }
+  const blog = new Blog(request.body)
   const savedBlog = await blog.save()
   response.status(201).json(savedBlog)
 
