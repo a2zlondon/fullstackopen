@@ -63,7 +63,7 @@ describe('when there is initially some blogs saved', () => {
     test('fails with statuscode 400 id is invalid', async () => {
       const invalidId = '5a3d5da59070081a82a3445'
 
-      await api
+      const response = await api
         .get(`/api/blogs/${invalidId}`)
         .expect(400)
     })
@@ -152,8 +152,22 @@ describe('when there is initially some blogs saved', () => {
 
       expect(titles).not.toContain(blogToDelete.title)
     })
-  })
 
+    test('error when id is not posted', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+
+      await api
+        .delete('/api/blogs/')
+        .expect(404)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      expect(blogsAtEnd).toHaveLength(
+        blogsAtStart.length
+      )
+
+    })
+  })
 
   describe('update a blog', () => {
     test('increment likes with a valid id', async () => {
@@ -169,6 +183,23 @@ describe('when there is initially some blogs saved', () => {
         .expect('Content-Type', /application\/json/)
 
       expect(resultBlog.body).toEqual(blogToView)
+    })
+
+    test('error when increment likes with an invalid id', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+
+      const blogToView = blogsAtStart[0]
+      blogToView.likes += 10
+
+      const invalidId = '5a3d5da59070081a82a3445'
+
+      await api
+        .put(`/api/blogs/${invalidId}`)
+        .send(blogToView)
+        .expect(400)
+        .expect('Content-Type', /application\/json/
+        )
+
     })
   })
 
