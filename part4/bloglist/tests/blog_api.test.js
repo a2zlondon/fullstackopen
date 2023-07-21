@@ -63,8 +63,7 @@ describe('when there is initially some blogs saved', () => {
     test('fails with statuscode 400 id is invalid', async () => {
       const invalidId = '5a3d5da59070081a82a3445'
 
-      const response = await api
-        .get(`/api/blogs/${invalidId}`)
+      await api.get(`/api/blogs/${invalidId}`)
         .expect(400)
     })
   })
