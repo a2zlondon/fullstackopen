@@ -1,32 +1,44 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
+const initialUsers = [
+  {
+    username: 'root',
+    name: 'Superuser',
+    password: 'salainen'
+  }
+]
+
 const initialBlogs = [
   {
     title: 'HTML is easy',
-    author: 'Jimmy Badman',
+    author: 'Jimmy Badmann',
     url: 'https://htmliseasy.com',
     likes: 6,
+    user: null
   },
   {
     title: 'Browser can execute only JavaScript',
     author: 'Billy Nomates',
     url: 'https://only-javaScript.com',
     likes: 9,
+    user: null
   },
 ]
 
-const nonExistingId = async () => {
+const nonExistingId = async (user) => {
   const blog = new Blog({
     title: 'willremovethissoon',
     author: 'willremovethissoon',
     url: 'willremovethissoon',
     likes: 0,
+    user: user._id
   })
-  await blog.save()
-  await blog.deleteOne()
 
-  return blog._id.toString()
+  await blog.save()
+  const removedBlog = await Blog.findByIdAndRemove(blog._id)
+
+  return removedBlog._id.toString()
 }
 
 const blogsInDb = async () => {
@@ -40,5 +52,5 @@ const usersInDb = async () => {
 }
 
 module.exports = {
-  initialBlogs, nonExistingId, blogsInDb, usersInDb
+  initialUsers, initialBlogs, nonExistingId, blogsInDb, usersInDb
 }

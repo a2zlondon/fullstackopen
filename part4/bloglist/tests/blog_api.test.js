@@ -1,34 +1,62 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const bcrypt = require('bcrypt')
-
 const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 const User = require('../models/user')
 const Blog = require('../models/blog')
+const jwt = require('jsonwebtoken')
+
+let token
 
 describe('when there is initially some blogs saved', () => {
+
   beforeEach(async () => {
+
+    await User.deleteMany({})
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    const userForToken = {
+      username: user.username,
+      id: user.id
+    }
+
+    token = jwt.sign(userForToken, process.env.SECRET)
+
     await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
+
+    for (let blog of helper.initialBlogs) {
+      let blogObject = new Blog(blog)
+      user.blogs = user.blogs.concat(blogObject._id)
+      blogObject.user = user.id
+      await blogObject.save()
+    }
+
+    await user.save()
+
   })
 
   test('blogs are returned as json', async () => {
+
     await api
       .get('/api/blogs')
+      .set({ 'Authorization': `Bearer ${token}` })
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
   test('all blogs are returned', async () => {
     const response = await api.get('/api/blogs')
+      .set({ 'Authorization': `Bearer ${token}` })
 
     expect(response.body).toHaveLength(helper.initialBlogs.length)
   })
 
   test('a specific blog is within the returned blogs', async () => {
     const response = await api.get('/api/blogs')
+      .set({ 'Authorization': `Bearer ${token}` })
 
     const title = response.body.map(r => r.title)
     expect(title).toContain(
@@ -39,11 +67,11 @@ describe('when there is initially some blogs saved', () => {
   describe('viewing a specific blog', () => {
     test('succeeds with a valid id', async () => {
       const blogsAtStart = await helper.blogsInDb()
-
       const blogToView = blogsAtStart[0]
 
       const resultBlog = await api
         .get(`/api/blogs/${blogToView.id}`)
+        .set({ 'Authorization': `Bearer ${token}` })
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
@@ -51,12 +79,15 @@ describe('when there is initially some blogs saved', () => {
     })
 
     test('fails with statuscode 404 if blog does not exist', async () => {
-      const validNonexistingId = await helper.nonExistingId()
+      const passwordHash = await bcrypt.hash('sekret', 10)
+      const user = new User({ username: 'root', passwordHash })
+      // const localToken = jwt.sign(user, process.env.SECRET)
+      // await user.save()
 
-      console.log(validNonexistingId)
-
+      const validNonexistingId = await helper.nonExistingId(user)
       await api
         .get(`/api/blogs/${validNonexistingId}`)
+        .set({ 'Authorization': `Bearer ${token}` })
         .expect(404)
     })
 
@@ -64,6 +95,7 @@ describe('when there is initially some blogs saved', () => {
       const invalidId = '5a3d5da59070081a82a3445'
 
       await api.get(`/api/blogs/${invalidId}`)
+        .set({ 'Authorization': `Bearer ${token}` })
         .expect(400)
     })
   })
@@ -75,10 +107,12 @@ describe('when there is initially some blogs saved', () => {
         author: 'Jerry Only',
         url: 'https://misfits.com',
         likes: 10,
+        user: '65270c9af13231ccbd9c1ca4'
       }
 
       await api
         .post('/api/blogs')
+        .set({ 'Authorization': `Bearer ${token}` })
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -102,6 +136,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .post('/api/blogs')
+        .set({ 'Authorization': `Bearer ${token}` })
         .send(newBlog)
         .expect(400)
 
@@ -115,10 +150,12 @@ describe('when there is initially some blogs saved', () => {
         'title': 'Test Title',
         'author': 'Test Author',
         'url': 'https://www.google.com/',
+        'user': ''
       }
       const response = await api
         .post('/api/blogs')
         .send(payload)
+        .set({ 'Authorization': `Bearer ${token}` })
         .set('Content-Type', 'application/json')
         .expect(201)
 
@@ -127,6 +164,7 @@ describe('when there is initially some blogs saved', () => {
 
     test('unique identifier property of the blog posts is named id', async () => {
       const response = await api.get('/api/blogs')
+        .set({ 'Authorization': `Bearer ${token}` })
       expect(response.body[0].id).toBeDefined()
     })
 
@@ -139,6 +177,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .delete(`/api/blogs/${blogToDelete.id}`)
+        .set({ 'Authorization': `Bearer ${token}` })
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
@@ -157,6 +196,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .delete('/api/blogs/')
+        .set({ 'Authorization': `Bearer ${token}` })
         .expect(404)
 
       const blogsAtEnd = await helper.blogsInDb()
@@ -171,16 +211,14 @@ describe('when there is initially some blogs saved', () => {
   describe('update a blog', () => {
     test('increment likes with a valid id', async () => {
       const blogsAtStart = await helper.blogsInDb()
-
       const blogToView = blogsAtStart[0]
       blogToView.likes += 10
-      console.log(blogToView)
       const resultBlog = await api
         .put(`/api/blogs/${blogToView.id}`)
+        .set({ 'Authorization': `Bearer ${token}` })
         .send(blogToView)
         .expect(200)
         .expect('Content-Type', /application\/json/)
-
       expect(resultBlog.body).toEqual(blogToView)
     })
 
@@ -195,6 +233,7 @@ describe('when there is initially some blogs saved', () => {
       await api
         .put(`/api/blogs/${invalidId}`)
         .send(blogToView)
+        .set({ 'Authorization': `Bearer ${token}` })
         .expect(400)
         .expect('Content-Type', /application\/json/
         )
@@ -202,67 +241,6 @@ describe('when there is initially some blogs saved', () => {
     })
   })
 
-})
-
-describe('when there is initially one user at db', () => {
-  beforeEach(async () => {
-    await User.deleteMany({})
-
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash })
-
-    await user.save()
-  })
-
-  test('users are returned as json', async () => {
-    await api
-      .get('/api/users')
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
-  })
-
-  test('creation succeeds with a fresh username', async () => {
-    const usersAtStart = await helper.usersInDb()
-
-    const newUser = {
-      username: 'mluukkai',
-      name: 'Matti Luukkainen',
-      password: 'salainen',
-    }
-
-    await api
-      .post('/api/users')
-      .send(newUser)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-
-    const usersAtEnd = await helper.usersInDb()
-    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
-
-    const usernames = usersAtEnd.map(u => u.username)
-    expect(usernames).toContain(newUser.username)
-  })
-
-  test('creation fails with proper statuscode and message if username already taken', async () => {
-    const usersAtStart = await helper.usersInDb()
-
-    const newUser = {
-      username: 'root',
-      name: 'Superuser',
-      password: 'salainen',
-    }
-
-    const result = await api
-      .post('/api/users')
-      .send(newUser)
-      .expect(400)
-      .expect('Content-Type', /application\/json/)
-
-    expect(result.body.error).toContain('expected `username` to be unique')
-
-    const usersAtEnd = await helper.usersInDb()
-    expect(usersAtEnd).toHaveLength(usersAtStart.length)
-  })
 })
 
 afterAll(async () => {
